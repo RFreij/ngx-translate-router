@@ -1,9 +1,12 @@
-import { Routes, Route, NavigationExtras, Params } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { Observable, Observer } from 'rxjs';
-import { Location } from '@angular/common';
-import { CacheMechanism, LocalizeRouterSettings } from './localize-router.config';
-import { Inject } from '@angular/core';
+import { Routes, Route, NavigationExtras, Params } from "@angular/router";
+import { TranslateService } from "@ngx-translate/core";
+import { Observable, Observer } from "rxjs";
+import { Location } from "@angular/common";
+import {
+  CacheMechanism,
+  LocalizeRouterSettings
+} from "./localize-router.config";
+import { Inject } from "@angular/core";
 
 const COOKIE_EXPIRY = 30; // 1 month
 
@@ -26,10 +29,11 @@ export abstract class LocalizeParser {
   /**
    * Loader constructor
    */
-  constructor(@Inject(TranslateService) private translate: TranslateService,
+  constructor(
+    @Inject(TranslateService) private translate: TranslateService,
     @Inject(Location) private location: Location,
-    @Inject(LocalizeRouterSettings) private settings: LocalizeRouterSettings) {
-  }
+    @Inject(LocalizeRouterSettings) private settings: LocalizeRouterSettings
+  ) {}
 
   /**
    * Load routes and fetch necessary data
@@ -37,9 +41,9 @@ export abstract class LocalizeParser {
   abstract load(routes: Routes): Promise<any>;
 
   /**
- * Prepare routes to be fully usable by ngx-translate-router
- * @param routes
- */
+   * Prepare routes to be fully usable by ngx-translate-router
+   * @param routes
+   */
   /* private initRoutes(routes: Routes, prefix = '') {
     routes.forEach(route => {
       if (route.path !== '**') {
@@ -52,7 +56,6 @@ export abstract class LocalizeParser {
       }
     });
   } */
-
 
   /**
    * Initialize language and routes
@@ -71,20 +74,30 @@ export abstract class LocalizeParser {
     const browserLang = this._getBrowserLang();
 
     if (this.settings.defaultLangFunction) {
-      this.defaultLang = this.settings.defaultLangFunction(this.locales, this._cachedLang, browserLang);
+      this.defaultLang = this.settings.defaultLangFunction(
+        this.locales,
+        this._cachedLang,
+        browserLang
+      );
     } else {
       this.defaultLang = this._cachedLang || browserLang || this.locales[0];
     }
     selectedLanguage = locationLang || this.defaultLang;
-    this.translate.setDefaultLang(this.defaultLang);
+    // this.translate.setDefaultLang(this.defaultLang);
 
     let children: Routes = [];
     /** if set prefix is enforced */
     if (this.settings.alwaysSetPrefix) {
-      const baseRoute = { path: '', redirectTo: this.defaultLang, pathMatch: 'full' };
+      const baseRoute = {
+        path: "",
+        redirectTo: this.defaultLang,
+        pathMatch: "full"
+      };
 
       /** extract potential wildcard route */
-      const wildcardIndex = routes.findIndex((route: Route) => route.path === '**');
+      const wildcardIndex = routes.findIndex(
+        (route: Route) => route.path === "**"
+      );
       if (wildcardIndex !== -1) {
         this._wildcardRoute = routes.splice(wildcardIndex, 1)[0];
       }
@@ -95,13 +108,16 @@ export abstract class LocalizeParser {
 
     /** exclude certain routes */
     for (let i = children.length - 1; i >= 0; i--) {
-      if (children[i].data && children[i].data['skipRouteLocalization']) {
+      if (children[i].data && children[i].data["skipRouteLocalization"]) {
         if (this.settings.alwaysSetPrefix) {
           // add directly to routes
           this.routes.push(children[i]);
         }
         // remove from routes to translate only if doesn't have to translate `redirectTo` property
-        if (children[i].redirectTo === undefined || !(children[i].data['skipRouteLocalization']['localizeRedirectTo'])) {
+        if (
+          children[i].redirectTo === undefined ||
+          !children[i].data["skipRouteLocalization"]["localizeRedirectTo"]
+        ) {
           children.splice(i, 1);
         }
       }
@@ -150,7 +166,7 @@ export abstract class LocalizeParser {
           }
           // if there is wildcard route
           if (this._wildcardRoute && this._wildcardRoute.redirectTo) {
-            this._translateProperty(this._wildcardRoute, 'redirectTo', true);
+            this._translateProperty(this._wildcardRoute, "redirectTo", true);
           }
         } else {
           this._translateRouteTree(this.routes);
@@ -167,16 +183,25 @@ export abstract class LocalizeParser {
    */
   private _translateRouteTree(routes: Routes): void {
     routes.forEach((route: Route) => {
-      const skipRouteLocalization = (route.data && route.data['skipRouteLocalization']);
-      const localizeRedirection = !skipRouteLocalization || skipRouteLocalization['localizeRedirectTo'];
+      const skipRouteLocalization =
+        route.data && route.data["skipRouteLocalization"];
+      const localizeRedirection =
+        !skipRouteLocalization || skipRouteLocalization["localizeRedirectTo"];
 
       if (route.redirectTo && localizeRedirection) {
-        this._translateProperty(route, 'redirectTo', !route.redirectTo.indexOf('/'));
+        this._translateProperty(
+          route,
+          "redirectTo",
+          !route.redirectTo.indexOf("/")
+        );
       }
 
       if (!skipRouteLocalization) {
-        if (route.path !== null && route.path !== undefined/* && route.path !== '**'*/) {
-          this._translateProperty(route, 'path');
+        if (
+          route.path !== null &&
+          route.path !== undefined /* && route.path !== '**'*/
+        ) {
+          this._translateProperty(route, "path");
         }
         if (route.children) {
           this._translateRouteTree(route.children);
@@ -192,9 +217,13 @@ export abstract class LocalizeParser {
    * Translate property
    * If first time translation then add original to route data object
    */
-  private _translateProperty(route: Route, property: string, prefixLang?: boolean): void {
+  private _translateProperty(
+    route: Route,
+    property: string,
+    prefixLang?: boolean
+  ): void {
     // set property to data if not there yet
-    const routeData: any = route.data = route.data || {};
+    const routeData: any = (route.data = route.data || {});
     if (!routeData.localizeRouter) {
       routeData.localizeRouter = {};
     }
@@ -207,10 +236,13 @@ export abstract class LocalizeParser {
   }
 
   get urlPrefix() {
-    if (this.settings.alwaysSetPrefix || this.currentLang !== this.defaultLang) {
+    if (
+      this.settings.alwaysSetPrefix ||
+      this.currentLang !== this.defaultLang
+    ) {
       return this.currentLang ? this.currentLang : this.defaultLang;
     } else {
-      return '';
+      return "";
     }
   }
 
@@ -218,36 +250,37 @@ export abstract class LocalizeParser {
    * Add current lang as prefix to given url.
    */
   addPrefixToUrl(url: string): string {
-    const plitedUrl = url.split('?');
-    plitedUrl[0] = plitedUrl[0].replace(/\/$/, '');
-    return `/${this.urlPrefix}${plitedUrl.join('?')}`;
+    const plitedUrl = url.split("?");
+    plitedUrl[0] = plitedUrl[0].replace(/\/$/, "");
+    return `/${this.urlPrefix}${plitedUrl.join("?")}`;
   }
 
   /**
    * Translate route and return observable
    */
   translateRoute(path: string): string {
-    const queryParts = path.split('?');
+    const queryParts = path.split("?");
     if (queryParts.length > 2) {
-      throw Error('There should be only one query parameter block in the URL');
+      throw Error("There should be only one query parameter block in the URL");
     }
-    const pathSegments = queryParts[0].split('/');
+    const pathSegments = queryParts[0].split("/");
 
     /** collect observables  */
-    return pathSegments
-      .map((part: string) => part.length ? this.translateText(part) : part)
-      .join('/') +
-      (queryParts.length > 1 ? `?${queryParts[1]}` : '');
+    return (
+      pathSegments
+        .map((part: string) => (part.length ? this.translateText(part) : part))
+        .join("/") + (queryParts.length > 1 ? `?${queryParts[1]}` : "")
+    );
   }
 
   /**
    * Get language from url
    */
   getLocationLang(url?: string): string {
-    const queryParamSplit = (url || this.location.path()).split('?');
+    const queryParamSplit = (url || this.location.path()).split("?");
     let pathSlices: string[] = [];
     if (queryParamSplit.length > 0) {
-      pathSlices = queryParamSplit[0].split('/');
+      pathSlices = queryParamSplit[0].split("/");
     }
     if (pathSlices.length > 1 && this.locales.indexOf(pathSlices[1]) !== -1) {
       return pathSlices[1];
@@ -300,14 +333,19 @@ export abstract class LocalizeParser {
    */
   private _cacheWithLocalStorage(value?: string): string {
     try {
-      if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
+      if (
+        typeof window === "undefined" ||
+        typeof window.localStorage === "undefined"
+      ) {
         return;
       }
       if (value) {
         window.localStorage.setItem(this.settings.cacheName, value);
         return;
       }
-      return this._returnIfInLocales(window.localStorage.getItem(this.settings.cacheName));
+      return this._returnIfInLocales(
+        window.localStorage.getItem(this.settings.cacheName)
+      );
     } catch (e) {
       // weird Safari issue in private mode, where LocalStorage is defined but throws error on access
       return;
@@ -319,25 +357,34 @@ export abstract class LocalizeParser {
    */
   private _cacheWithCookies(value?: string): string {
     try {
-      if (  typeof document === 'undefined' || typeof document.cookie === 'undefined') {
+      if (
+        typeof document === "undefined" ||
+        typeof document.cookie === "undefined"
+      ) {
         return;
       }
       const name = encodeURIComponent(this.settings.cacheName);
       if (value) {
         let cookieTemplate = `${this.settings.cookieFormat}`;
         cookieTemplate = cookieTemplate
-          .replace('{{value}}', `${name}=${encodeURIComponent(value)}`)
+          .replace("{{value}}", `${name}=${encodeURIComponent(value)}`)
           .replace(/{{expires:?(\d+)?}}/g, (fullMatch, groupMatch) => {
-              const days = groupMatch === undefined ? COOKIE_EXPIRY : parseInt(groupMatch, 10);
-              const date: Date = new Date();
-              date.setTime(date.getTime() + days * 86400000);
-              return `expires=${date.toUTCString()}`;
+            const days =
+              groupMatch === undefined
+                ? COOKIE_EXPIRY
+                : parseInt(groupMatch, 10);
+            const date: Date = new Date();
+            date.setTime(date.getTime() + days * 86400000);
+            return `expires=${date.toUTCString()}`;
           });
 
         document.cookie = cookieTemplate;
         return;
       }
-      const regexp = new RegExp('(?:^' + name + '|;\\s*' + name + ')=(.*?)(?:;|$)', 'g');
+      const regexp = new RegExp(
+        "(?:^" + name + "|;\\s*" + name + ")=(.*?)(?:;|$)",
+        "g"
+      );
       const result = regexp.exec(document.cookie);
       return decodeURIComponent(result[1]);
     } catch (e) {
@@ -360,13 +407,16 @@ export abstract class LocalizeParser {
    */
   private translateText(key: string): string {
     if (this.escapePrefix && key.startsWith(this.escapePrefix)) {
-      return key.replace(this.escapePrefix, '');
+      return key.replace(this.escapePrefix, "");
     } else {
       if (!this._translationObject) {
         return key;
       }
       const fullKey = this.prefix + key;
-      const res = this.translate.getParsedResult(this._translationObject, fullKey);
+      const res = this.translate.getParsedResult(
+        this._translationObject,
+        fullKey
+      );
       return res !== fullKey ? res : key;
     }
   }
@@ -376,7 +426,10 @@ export abstract class LocalizeParser {
    * @param newExtras extras that containes new QueryParams
    * @param currentQueryParams current query params
    */
-  public chooseQueryParams(newExtras: NavigationExtras, currentQueryParams: Params) {
+  public chooseQueryParams(
+    newExtras: NavigationExtras,
+    currentQueryParams: Params
+  ) {
     let queryParamsObj: Params;
     if (newExtras && newExtras.queryParams) {
       queryParamsObj = newExtras.queryParams;
@@ -392,7 +445,9 @@ export abstract class LocalizeParser {
    * @param params query params object
    */
   public formatQueryParams(params: Params): string {
-    return Object.keys(params).map(key => key + '=' + params[key]).join('&');
+    return Object.keys(params)
+      .map(key => key + "=" + params[key])
+      .join("&");
   }
 
   /**
@@ -414,16 +469,21 @@ export abstract class LocalizeParser {
  * Manually set configuration
  */
 export class ManualParserLoader extends LocalizeParser {
-
   /**
    * CTOR
    */
-  constructor(translate: TranslateService, location: Location, settings: LocalizeRouterSettings,
-    locales: string[] = ['en'], prefix: string = 'ROUTES.', escapePrefix: string = '') {
+  constructor(
+    translate: TranslateService,
+    location: Location,
+    settings: LocalizeRouterSettings,
+    locales: string[] = ["en"],
+    prefix: string = "ROUTES.",
+    escapePrefix: string = ""
+  ) {
     super(translate, location, settings);
     this.locales = locales;
-    this.prefix = prefix || '';
-    this.escapePrefix = escapePrefix || '';
+    this.prefix = prefix || "";
+    this.escapePrefix = escapePrefix || "";
   }
 
   /**

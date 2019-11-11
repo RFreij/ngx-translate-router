@@ -1,12 +1,13 @@
 {
-  "name": "@gilsdav/ngx-translate-router",
-  "version": "2.2.1",
-  "homepage": "https://github.com/gilsdav/ngx-translate-router#readme",
+  "name": "@netcreaties/ngx-translate-router-no-default",
+  "version": "1.0.0",
+  "description": "Just to test something",
+  "homepage": "https://github.com/RFreij/ngx-translate-router#readme",
   "license" : "MIT",
   "author": {
-    "name": "David Gilson",
-    "email": "davgilson@live.fr",
-    "url": "https://github.com/gilsdav"
+    "name": "Roy Freij",
+    "email": "info@royfreij.nl",
+    "url": "https://github.com/RFreij"
   },
   "peerDependencies": {
     "@angular/common": "^8.0.0",
