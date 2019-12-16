@@ -1,6 +1,6 @@
 import { Routes, Route, NavigationExtras, Params } from "@angular/router";
 import { TranslateService } from "@ngx-translate/core";
-import { Observable, Observer, forkJoin } from "rxjs";
+import { Observable, Observer } from "rxjs";
 import { Location } from "@angular/common";
 import {
   CacheMechanism,
@@ -156,12 +156,7 @@ export abstract class LocalizeParser {
         this._languageRoute.path = language;
       }
 
-      const translationLoad = forkJoin(
-        this.translate.use(this.locales[0]),
-        this.translate.use(language)
-      );
-
-      translationLoad.subscribe((translations: any) => {
+      this.translate.use(language).subscribe((translations: any) => {
         this._translationObject = translations;
         this.currentLang = language;
 
@@ -418,10 +413,7 @@ export abstract class LocalizeParser {
         return key;
       }
       const fullKey = this.prefix + key;
-      const res = this.translate.getParsedResult(
-        this._translationObject,
-        fullKey
-      );
+      const res = this.translate.instant(this.prefix + key);
       return res !== fullKey ? res : key;
     }
   }
