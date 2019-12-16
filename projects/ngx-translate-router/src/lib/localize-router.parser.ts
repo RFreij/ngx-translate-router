@@ -413,7 +413,10 @@ export abstract class LocalizeParser {
         return key;
       }
       const fullKey = this.prefix + key;
-      const res = this.translate.instant(this.prefix + key);
+      const res = this.translate.getParsedResult(
+        this._translationObject,
+        fullKey
+      );
       return res !== fullKey ? res : key;
     }
   }
