@@ -1,12 +1,13 @@
-import { Routes, Route, NavigationExtras, Params } from '@angular/router';
+import { Location } from '@angular/common';
+import { HttpParams } from '@angular/common/http';
+import { Inject } from '@angular/core';
+import { NavigationExtras, Params, Route, Routes } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
-import { Location } from '@angular/common';
 import {
     CacheMechanism,
     LocalizeRouterSettings,
 } from './localize-router.config';
-import { Inject } from '@angular/core';
 
 const COOKIE_EXPIRY = 30; // 1 month
 
@@ -469,9 +470,7 @@ export abstract class LocalizeParser {
      * @param params query params object
      */
     public formatQueryParams(params: Params): string {
-        return Object.keys(params)
-            .map((key) => key + '=' + params[key])
-            .join('&');
+        return new HttpParams({ fromObject: params }).toString();
     }
 
     /**
