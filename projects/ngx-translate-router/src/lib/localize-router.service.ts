@@ -39,6 +39,9 @@ export class LocalizeRouterService {
    */
   init(): void {
     this.router.resetConfig(this.parser.routes);
+    if (this.settings.initialNavigation) {
+      this.router.initialNavigation();
+    }
     // subscribe to router events
     this.router.events
       .pipe(
@@ -149,6 +152,10 @@ export class LocalizeRouterService {
       return this.buildUrlFromSegments(snapshot, subPathMatchedSegments);
     } else if (snapshot.data.localizeRouter) {
       const path = snapshot.data.localizeRouter.path;
+      const subPathSegments = path.split('/');
+      return this.buildUrlFromSegments(snapshot, subPathSegments);
+    } else if (snapshot.parent && snapshot.parent.parent) { // Not lang route and no localizeRouter data = excluded path
+      const path = snapshot.routeConfig.path;
       const subPathSegments = path.split('/');
       return this.buildUrlFromSegments(snapshot, subPathSegments);
     } else {
