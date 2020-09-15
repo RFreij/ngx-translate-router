@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { HttpParams } from '@angular/common/http';
-import { Inject } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { NavigationExtras, Params, Route, Routes } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, Observer } from 'rxjs';
@@ -14,6 +14,7 @@ const COOKIE_EXPIRY = 30; // 1 month
 /**
  * Abstract class for parsing localization
  */
+@Injectable()
 export abstract class LocalizeParser {
     locales: Array<string>;
     currentLang: string;
@@ -519,6 +520,7 @@ export class ManualParserLoader extends LocalizeParser {
     }
 }
 
+@Injectable()
 export class DummyLocalizeParser extends LocalizeParser {
     load(routes: Routes): Promise<any> {
         return new Promise((resolve: any) => {
