@@ -1,7 +1,7 @@
 {
-  "name": "@justafool/ngx-translate-router-no-default",
+  "name": "@niek_velde/ngx-translate-router-no-default",
   "version": "4.0.0",
-  "description": "Just to test something",
+  "description": "NGX translate router no default",
   "homepage": "https://github.com/RFreij/ngx-translate-router#readme",
   "license": "MIT",
   "author": {
