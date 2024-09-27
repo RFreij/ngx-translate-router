@@ -21,7 +21,8 @@ Based on and extension of [ngx-translate](https://github.com/ngx-translate/core)
 | 6 - 7           | 1.0.2            | 1.0.1       | legacy |
 | 7               | 1.7.3            | 1.1.0       | legacy |
 | 8               | 2.2.3            | 1.1.0       | legacy |
-| 8 - 10          | 3.1.0            | 1.1.2       | active |
+| 8 - 12          | 3.1.9            | 1.1.2       | active |
+| 13              | 4.0.1            | 2.0.0       | active |
 
 Demo project can be found under sub folder `src`.
 
@@ -585,7 +586,32 @@ localizeService.translateRoute('about'); // -> 'ueber-uns' (e.g. for German lang
 ```
 yoursite.com/en/users/John%20Doe/profile -> yoursite.com/de/benutzer/John%20Doe/profil
 ```
+#### Hooks:
+For now there is only one hook which is only interesting if you are using `initialNavigation` flag (and more specifically, if you are making an `AppInitializer` that uses Angular's `Router` or `ngx-translate-router`).
+- `hooks.initialized`: an observable with event sent when initialNavigation is executed.
 
+Usage example:
+```ts
+export const appInitializerFactory = (injector: Injector) => {
+  return () => {
+    const localize = injector.get(LocalizeRouterService);
+    return localize.hooks.initialized
+      .pipe(
+        tap(() => {
+          const router = injector.get(Router);
+          router.events.pipe(
+            filter(url => url instanceof NavigationEnd),
+            first()
+          ).subscribe((route: NavigationEnd) => {
+            console.log(router.url, route.url);
+            router.navigate(['/fr/accueil']);
+          });
+        })
+      )
+      .toPromise();
+  }
+};
+```
 ### LocalizeParser
 
 #### Properties:
@@ -605,3 +631,15 @@ yoursite.com/en/users/John%20Doe/profile -> yoursite.com/de/benutzer/John%20Doe/
 ## License
 
 Licensed under MIT
+
+## Thanks
+Thanks to all our contributors
+<a href="https://github.com/gilsdav/ngx-translate-router/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=gilsdav/ngx-translate-router" />
+</a>
+
+As well as to all the contributors of the initial project
+<a href="https://github.com/Greentube/localize-router/graphs/contributors">
+  <img src="https://contributors-img.web.app/image?repo=Greentube/localize-router" />
+</a>
+<sub>*Made with [contributors-img](https://contributors-img.web.app).*</sub>

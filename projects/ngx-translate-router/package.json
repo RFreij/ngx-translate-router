@@ -1,7 +1,7 @@
 {
-  "name": "@justafool/ngx-translate-router-no-default",
-  "version": "3.0.2",
-  "description": "Just to test something",
+  "name": "@niek_velde/ngx-translate-router-no-default",
+  "version": "4.0.1",
+  "description": "NGX translate router no default",
   "homepage": "https://github.com/RFreij/ngx-translate-router#readme",
   "license": "MIT",
   "author": {
@@ -10,9 +10,9 @@
     "url": "https://github.com/RFreij"
   },
   "peerDependencies": {
-    "@angular/common": ">=8.0.0",
-    "@angular/core": ">=8.0.0",
-    "@angular/router": ">=8.0.0",
+    "@angular/common": ">=13.0.0",
+    "@angular/core": ">=13.0.0",
+    "@angular/router": ">=13.0.0",
     "@ngx-translate/core": ">=11.0.1"
   }
 }
